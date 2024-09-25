@@ -180,6 +180,8 @@
             reader.readAsDataURL(event.target.files[0]);
         }
 
+
+        // chỉ cần đóng đoạn này thì sẽ xóa nền được file nặng
         // function previewImage(event) {
         //     const file = event.target.files[0];
 
@@ -198,8 +200,8 @@
         //             const ctx = canvas.getContext('2d');
 
         //             // Đặt kích thước cho canvas (thay đổi kích thước nếu cần)
-        //             const MAX_WIDTH = 2000; // Kích thước tối đa
-        //             const MAX_HEIGHT = 1500;
+        //             const MAX_WIDTH = 800; // Kích thước tối đa
+        //             const MAX_HEIGHT = 600;
 
         //             let width = img.width;
         //             let height = img.height;
@@ -243,7 +245,7 @@
 
         function deleteImage() {
             const previewImage = document.getElementById('preview-image');
-            previewImage.src = '{{ asset('storage/musicians/white.png') }}'; // Reset to default image
+            previewImage.src = '{{ asset('storage / musicians / white.png') }}'; // Reset to default image
             previewImage.style.display = 'block';
             document.querySelector('.action-buttons').style.display = 'none';
 
@@ -310,7 +312,6 @@
                 formData.append('file', file, 'image.png'); // Thêm file vào FormData
                 fetch('https://nhhoang.shop/api/action/ai/remove-background/', {
                         method: 'POST',
-                        mode: 'no-cors',
                         headers: {
                             'accept': 'application/json',
                         },

@@ -26,6 +26,10 @@
 
     <style>
         /* Custom styling for image preview */
+        .tui-image-editor {
+            background-image: url('/storage/musicians/remove-bg.png') !important;
+        }
+
         #preview-image {
             padding: 10px;
             border: 1px dashed rgb(195, 195, 195);
@@ -165,20 +169,83 @@
     <script>
         let editor;
 
+        // function previewImage(event) {
+        //     const reader = new FileReader();
+        //     reader.onload = function() {
+        //         const previewImage = document.getElementById('preview-image');
+        //         previewImage.src = reader.result;
+        //         previewImage.style.display = 'block';
+        //         document.querySelector('.action-buttons').style.display = 'flex';
+        //     }
+        //     reader.readAsDataURL(event.target.files[0]);
+        // }
+
+
+        // chỉ cần đóng đoạn này thì sẽ xóa nền được file nặng
         function previewImage(event) {
+            const file = event.target.files[0];
+
+            // Kiểm tra loại file
+            if (!file.type.startsWith('image/')) {
+                alert('Please upload an image file.');
+                return;
+            }
+
             const reader = new FileReader();
             reader.onload = function() {
-                const previewImage = document.getElementById('preview-image');
-                previewImage.src = reader.result;
-                previewImage.style.display = 'block';
-                document.querySelector('.action-buttons').style.display = 'flex';
-            }
-            reader.readAsDataURL(event.target.files[0]);
+                const img = new Image();
+                img.onload = function() {
+                    // Tạo một canvas để vẽ hình ảnh
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+
+                    // Đặt kích thước cho canvas (thay đổi kích thước nếu cần)
+                    const MAX_WIDTH = 800; // Kích thước tối đa
+                    const MAX_HEIGHT = 600;
+
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Tính toán tỉ lệ
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    // Đặt kích thước cho canvas
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    // Vẽ hình ảnh đã điều chỉnh kích thước vào canvas
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Chuyển đổi canvas thành base64
+                    const compressedImage = canvas.toDataURL(file.type);
+
+                    // Cập nhật hình ảnh xem trước
+                    const previewImage = document.getElementById('preview-image');
+                    previewImage.src = compressedImage;
+                    previewImage.style.display = 'block';
+                    document.querySelector('.action-buttons').style.display = 'flex';
+                };
+
+                img.src = reader.result;
+            };
+
+            reader.readAsDataURL(file);
         }
+
 
         function deleteImage() {
             const previewImage = document.getElementById('preview-image');
-            previewImage.src = '{{ asset('storage/musicians/white.png') }}'; // Reset to default image
+            previewImage.src = '{{ asset('storage / musicians / white.png') }}'; // Reset to default image
             previewImage.style.display = 'block';
             document.querySelector('.action-buttons').style.display = 'none';
 
